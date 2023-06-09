@@ -16,7 +16,7 @@ RENAME COLUMN temp_days TO months;
 
 --calculate quaterly Profits in each all the years.
 
--- We will first of all calculate profits and create a column for quarter from the months
+-- The first apprach is to calculate profits and create a column for quarter from the months
 
 SELECT
   months,
@@ -34,6 +34,7 @@ FROM
   sales
 GROUP BY
   1,2;
+  
 ---Write a Common Table Expression statement to extract only the columns that is needed in the query above .
 
 WITH filtered_sales AS (
@@ -51,7 +52,7 @@ WITH filtered_sales AS (
   FROM
     sales
 )
-SELECT
+SELECT -- Subquery
   years,
   quarter,
   SUM(revenue) AS Total_Revenue,
@@ -125,3 +126,76 @@ GROUP BY
 1
 
 -- Top 10 Most Profitable Country 
+
+SELECT
+  country,
+  SUM(revenue) AS Total_Revenue,
+  SUM(costs) AS Total_Cost,
+  SUM(revenue) - SUM(costs) AS Total_Profits
+FROM
+  sales
+GROUP BY
+1
+ORDER BY 4 DESC
+
+-- Checking the distinct country in the datasets
+SELECT distinct country from sales
+
+-- Top 10 Least Profitable Countries.
+
+SELECT
+  country,
+  SUM(revenue) AS Total_Revenue,
+  SUM(costs) AS Total_Cost,
+  SUM(revenue) - SUM(costs) AS Total_Profits
+FROM
+  sales
+GROUP BY
+1
+ORDER BY 4 ASC
+
+--Return an output of all product categories sold from least amount to most amount of revenue generated.
+
+SELECT productcategory, 
+SUM(revenue) AS Total_Revenue 
+FROM sales
+GROUP BY 1
+ORDER BY 2
+--Clothing generated the least revenue and Bikes generated the most revenue.
+select * from sales
+
+--Top 2 product sold of all time.
+
+SELECT productcategory,  
+SUM(orderquantity) AS Total_Quantity 
+FROM sales
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 2
+
+-- tOP 10 product by Profit in all time sales.
+
+WITH County_Profit AS (
+  SELECT
+    product,
+    SUM(orderquantity) AS Total_Quantity,
+    SUM(revenue) AS Total_Revenue,
+    SUM(costs) AS Total_Cost,
+    SUM(revenue) - SUM(costs) AS Total_Profits
+  FROM
+    sales
+  GROUP BY
+    product 
+)
+SELECT 
+  product,
+  SUM(Total_Quantity) AS Total_Quantity,
+  SUM(Total_Profits) AS Total_Profits
+FROM County_Profit
+GROUP BY 
+  1
+  ORDER BY 3 DESC
+  LIMIT 10
+  
+
+
